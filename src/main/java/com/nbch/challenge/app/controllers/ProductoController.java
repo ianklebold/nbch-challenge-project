@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -56,7 +57,7 @@ public class ProductoController {
             )
     })
     @PostMapping
-    public ResponseEntity<?> createProduct(@RequestBody CrearProductoDto crearProductoDto){
+    public ResponseEntity<?> createProduct(@Valid @RequestBody CrearProductoDto crearProductoDto){
 
         Producto producto = productoService.createProducto(crearProductoDto);
 
