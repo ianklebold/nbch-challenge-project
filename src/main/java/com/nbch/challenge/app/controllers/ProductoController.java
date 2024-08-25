@@ -16,10 +16,9 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 import static com.nbch.challenge.app.controllers.ProductoController.PRODUCTO_PATH;
 
@@ -71,4 +70,30 @@ public class ProductoController {
                         producto.getFechaCreacionProducto()
                 ));
     }
+
+    @Operation(
+            summary = "API REST para obtener todos los productos",
+            description = "API REST que permite obtener todos los productos"
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "HTTP Status OK"
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "HTTP Status SERVER ERROR",
+                    content = @Content(
+                            schema = @Schema(implementation = ErrorGenerico.class)
+                    )
+            )
+    })
+    @GetMapping
+    public List<ProductoDto> getProductos(){
+
+        return productoService.getProductos();
+
+    }
+
+
 }
