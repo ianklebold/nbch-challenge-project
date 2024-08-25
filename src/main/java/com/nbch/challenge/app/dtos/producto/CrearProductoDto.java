@@ -2,7 +2,7 @@ package com.nbch.challenge.app.dtos.producto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(name = "Producto",
+@Schema(name = "Crear Producto",
         description = "Esquema para transferir la informacion del Producto nuevo"
 )
 public record CrearProductoDto(
