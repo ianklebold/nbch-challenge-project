@@ -12,8 +12,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
-import static com.nbch.challenge.app.controllers.ProductoController.PATH_ID_NAME;
-import static com.nbch.challenge.app.controllers.ProductoController.RESOURCE_NAME;
 
 @Service
 @AllArgsConstructor
@@ -44,12 +42,12 @@ public class ProductoServiceImpl implements ProductoService{
     }
 
     @Override
-    public Optional<ProductoDto> getProductoById(long idProducto) {
+    public ProductoDto getProductoById(long idProducto) {
 
         Optional<Producto> producto = productoRepository.findById(idProducto);
 
         if ( producto.isPresent() ){
-            return Optional.of(productoMapper.productoToProductoDto(producto.get()));
+            return productoMapper.productoToProductoDto(producto.get());
         }
 
         throw new ResourceNotFoundException( Long.toString( idProducto ) );

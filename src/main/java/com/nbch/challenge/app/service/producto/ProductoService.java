@@ -13,7 +13,7 @@ public interface ProductoService {
 
     List<ProductoDto> getProductos();
 
-    Optional<ProductoDto> getProductoById(long idProducto);
+    ProductoDto getProductoById(long idProducto);
 
     boolean deleteProductoById(long idProducto);
 

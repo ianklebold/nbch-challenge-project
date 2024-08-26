@@ -152,18 +152,12 @@ public class ProductoController {
                                                            @NotNull( message = "El id no debe ser nulo" )
                                                            @Positive( message = "El id debe ser positivo" ) long idProducto ){
 
-        Optional<ProductoDto> producto = productoService.getProductoById( idProducto );
+        ProductoDto productoDto = productoService.getProductoById( idProducto );
 
-        if ( producto.isPresent() ){
+        return ResponseEntity
+                .status( HttpStatus.OK )
+                .body( productoDto );
 
-            var productoDto = producto.get();
-
-            return ResponseEntity
-                    .status( HttpStatus.OK )
-                    .body( productoDto );
-        }
-
-        throw new ResourceNotFoundException( Long.toString( idProducto ) );
 
     }
 
