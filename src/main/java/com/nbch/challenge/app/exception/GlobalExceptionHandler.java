@@ -58,6 +58,15 @@ public class GlobalExceptionHandler {
         return ResponseEntity.internalServerError().body(errorGenerico);
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorGenerico> handleIllegalArgumentException(HandlerMethodValidationException exception){
+        ErrorGenerico errorGenerico = new ErrorGenerico(
+                ErrorConstants.ERROR_DESCONOCIDO_TEMPLATE,
+                exception.getMessage()
+        );
+        return new ResponseEntity<>(errorGenerico, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ErrorNoEncontrado> handleResourceNotFoundException(ResourceNotFoundException exception, WebRequest webRequest) {
         ErrorNoEncontrado errorNoEncontrado = new ErrorNoEncontrado(
