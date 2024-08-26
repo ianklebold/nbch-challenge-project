@@ -32,10 +32,33 @@ public class GlobalExceptionHandler {
         return ResponseEntity.internalServerError().body(errorGenerico);
     }
 
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ErrorGenerico> handleResourceNotFoundException(ResourceNotFoundException exception, WebRequest webRequest) {
+        ErrorGenerico errorGenerico = new ErrorGenerico(
+                HttpStatus.NOT_FOUND.getReasonPhrase(),
+                getMensajeErrorTemplate(webRequest,exception.getMessage())
+        );
+        return new ResponseEntity<>(errorGenerico, HttpStatus.NOT_FOUND);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorGenerico> handleGlobalException(Exception exception, WebRequest webRequest){
-        ErrorGenerico errorGenerico = new ErrorGenerico(exception.getMessage(),webRequest.getDescription(false));
-
+        ErrorGenerico errorGenerico = new ErrorGenerico(
+                HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(),
+                getMensajeErrorTemplate(webRequest,exception.getMessage())
+        );
         return new ResponseEntity<>(errorGenerico, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    private String getMensajeErrorTemplate(WebRequest webRequest, String mensaje){
+
+        StringBuffer stringBuffer = new StringBuffer();
+
+        return stringBuffer.append("URI : ")
+                .append(webRequest.getDescription(false))
+                .append(" ")
+                .append("MENSAJE : ")
+                .append(mensaje).toString();
+
     }
 }
