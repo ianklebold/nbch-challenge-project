@@ -60,11 +60,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ErrorNoEncontrado> handleResourceNotFoundException(ResourceNotFoundException exception, WebRequest webRequest) {
-        ErrorNoEncontrado errorGenerico = new ErrorNoEncontrado(
+        ErrorNoEncontrado errorNoEncontrado = new ErrorNoEncontrado(
                 ErrorConstants.PRODUCTO_NO_EXISTE_TEMPLATE,
                 exception.getMessage()
         );
-        return new ResponseEntity<>(errorGenerico, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(errorNoEncontrado, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(Exception.class)
