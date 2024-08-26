@@ -2,8 +2,10 @@ package com.nbch.challenge.app.controllers.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nbch.challenge.app.controllers.ProductoController;
+import com.nbch.challenge.app.dtos.errors.ErrorGenerico;
 import com.nbch.challenge.app.dtos.producto.CrearProductoDto;
 import com.nbch.challenge.app.dtos.producto.ProductoDto;
+import com.nbch.challenge.app.exception.ErrorConstants;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -21,6 +23,7 @@ import org.springframework.web.context.WebApplicationContext;
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -114,8 +117,14 @@ public class ProductControllerIT {
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsBytes(productoDto)));
 
-            result.andExpect(status().isInternalServerError())
-                    .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+            var resultado = result.andExpect(status().isInternalServerError())
+                    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                    .andReturn();
+
+            var genericErrorDto = objectMapper.readValue(resultado.getResponse().getContentAsString(), ErrorGenerico.class);
+
+            assertEquals(ErrorConstants.ERROR_CREATION_ENTITY_TEMPLATE, genericErrorDto.codigo());
+            assertNotEquals(null, genericErrorDto.mensaje());
 
         }
 
@@ -127,9 +136,14 @@ public class ProductControllerIT {
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsBytes(productoDto)));
 
-            result.andExpect(status().isInternalServerError())
-                    .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+            var resultado = result.andExpect(status().isInternalServerError())
+                    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                    .andReturn();
 
+            var genericErrorDto = objectMapper.readValue(resultado.getResponse().getContentAsString(), ErrorGenerico.class);
+
+            assertEquals(ErrorConstants.ERROR_CREATION_ENTITY_TEMPLATE, genericErrorDto.codigo());
+            assertNotEquals(null, genericErrorDto.mensaje());
         }
 
     }

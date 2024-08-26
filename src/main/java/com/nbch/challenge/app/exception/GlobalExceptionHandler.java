@@ -17,8 +17,6 @@ import java.util.Map;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    public static final String PRODUCTO_NO_EXISTE_TEMPLATE = "PRODUCTO_NO_EXISTE";
-    public static final String ERROR_DESCONOCIDO_TEMPLATE = "ERROR_DESCONOCIDO";
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorGenerico> handleBindErrors(MethodArgumentNotValidException exception){
@@ -30,7 +28,7 @@ public class GlobalExceptionHandler {
                     return errorMap;
                 }).toList();
 
-        ErrorGenerico errorGenerico = new ErrorGenerico("Error en la creacion de la entidad",
+        ErrorGenerico errorGenerico = new ErrorGenerico(ErrorConstants.ERROR_CREATION_ENTITY_TEMPLATE,
                 StringUtils.join(errorList, ",")
                 );
 
@@ -53,7 +51,7 @@ public class GlobalExceptionHandler {
                         }
                 ).toList();
 
-        ErrorGenerico errorGenerico = new ErrorGenerico("Error en los argumentos enviados a la request",
+        ErrorGenerico errorGenerico = new ErrorGenerico(ErrorConstants.ERROR_ARGUMENTS_TEMPLATE,
                 StringUtils.join(errorList, ",")
         );
 
@@ -63,7 +61,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ErrorNoEncontrado> handleResourceNotFoundException(ResourceNotFoundException exception, WebRequest webRequest) {
         ErrorNoEncontrado errorGenerico = new ErrorNoEncontrado(
-                PRODUCTO_NO_EXISTE_TEMPLATE,
+                ErrorConstants.PRODUCTO_NO_EXISTE_TEMPLATE,
                 exception.getMessage()
         );
         return new ResponseEntity<>(errorGenerico, HttpStatus.NOT_FOUND);
@@ -72,7 +70,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorGenerico> handleGlobalException(Exception exception, WebRequest webRequest){
         ErrorGenerico errorGenerico = new ErrorGenerico(
-                ERROR_DESCONOCIDO_TEMPLATE,
+                ErrorConstants.ERROR_DESCONOCIDO_TEMPLATE,
                 getMensajeErrorTemplate(webRequest,exception.getMessage())
         );
         return new ResponseEntity<>(errorGenerico, HttpStatus.INTERNAL_SERVER_ERROR);
