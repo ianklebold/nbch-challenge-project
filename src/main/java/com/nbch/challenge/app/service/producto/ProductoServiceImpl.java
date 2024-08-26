@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -35,6 +36,16 @@ public class ProductoServiceImpl implements ProductoService{
                 .stream()
                 .map(productoMapper::productoToProductoDto)
                 .toList();
+
+    }
+
+    @Override
+    public Optional<ProductoDto> getProductoById(long idProducto) {
+
+        Optional<Producto> producto = productoRepository.findById(idProducto);
+
+
+        return producto.map(productoMapper::productoToProductoDto);
 
     }
 
