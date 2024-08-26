@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -24,6 +25,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.hamcrest.core.Is.is;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -49,11 +51,33 @@ public class ProductControllerIT {
     @DisplayName("GET ENDPOINTS")
     class test_method_get_for_productos{
         @Test
-        void test_get_all_products() throws Exception {
+        void test_get_all_products_without_elements() throws Exception {
             mockMvc.perform(
                     get(ProductoController.PRODUCTO_PATH)
             ).andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(jsonPath("$.length()",is(0)));
+        }
+
+        @Test
+        @Rollback
+        void test_get_all_products_with_elements() throws Exception {
+            CrearProductoDto productoDto = new CrearProductoDto("nombre producto1", "Descripcion producto",200);
+            CrearProductoDto productoDto2 = new CrearProductoDto("nombre producto2", "Descripcion producto2",600);
+
+             mockMvc.perform(post(ProductoController.PRODUCTO_PATH)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsBytes(productoDto)));
+
+            mockMvc.perform(post(ProductoController.PRODUCTO_PATH)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsBytes(productoDto2)));
+
+            mockMvc.perform(
+                    get(ProductoController.PRODUCTO_PATH))
+                    .andExpect(status().isOk())
+                    .andExpect(content().contentType(MediaType.APPLICATION_JSON)
+                    ).andExpect(jsonPath("$.length()",is(2)));
         }
 
     }
