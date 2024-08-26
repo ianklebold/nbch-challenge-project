@@ -1,7 +1,8 @@
 package com.nbch.challenge.app.controllers;
 
 import com.nbch.challenge.app.domain.Producto;
-import com.nbch.challenge.app.dtos.ErrorGenerico;
+import com.nbch.challenge.app.dtos.errors.ErrorGenerico;
+import com.nbch.challenge.app.dtos.errors.ErrorNoEncontrado;
 import com.nbch.challenge.app.dtos.producto.CrearProductoDto;
 import com.nbch.challenge.app.dtos.producto.ProductoDto;
 import com.nbch.challenge.app.exception.ResourceNotFoundException;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.DeleteMapping;
 
 import java.util.List;
 import java.util.Optional;
@@ -134,7 +136,7 @@ public class ProductoController {
                     responseCode = "404",
                     description = "HTTP Status NOT FOUND",
                     content = @Content(
-                            schema = @Schema(implementation = ErrorGenerico.class)
+                            schema = @Schema(implementation = ErrorNoEncontrado.class)
                     )
             ),
             @ApiResponse(
@@ -161,8 +163,40 @@ public class ProductoController {
                     .body( productoDto );
         }
 
-        throw new ResourceNotFoundException( RESOURCE_NAME,PATH_ID_NAME, Long.toString( idProducto ) );
+        throw new ResourceNotFoundException( Long.toString( idProducto ) );
 
+    }
+
+    @Operation(
+            summary = "API REST para eliminar un producto por id",
+            description = "API REST que permite eliminar producto por id"
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "204",
+                    description = "HTTP Status NOT CONTENT"
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "HTTP Status NOT FOUND",
+                    content = @Content(
+                            schema = @Schema(implementation = ErrorNoEncontrado.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "HTTP Status SERVER ERROR",
+                    content = @Content(
+                            schema = @Schema(implementation = ErrorGenerico.class)
+                    )
+            )
+    })
+    @DeleteMapping(PATH_ID)
+    public ResponseEntity<?> deleteProductoById( @PathVariable( PATH_ID_NAME )
+                                                            @NotNull( message = "El id no debe ser nulo" )
+                                                            @Positive( message = "El id debe ser positivo" ) long idProducto ){
+        productoService.deleteProductoById( idProducto );
+        return ResponseEntity.status( HttpStatus.NO_CONTENT ).build();
     }
 
 
