@@ -1,6 +1,7 @@
 package com.nbch.challenge.app.exception;
 
-import com.nbch.challenge.app.dtos.ErrorGenerico;
+import com.nbch.challenge.app.dtos.errors.ErrorGenerico;
+import com.nbch.challenge.app.dtos.errors.ErrorNoEncontrado;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -8,12 +9,16 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
+
+    public static final String PRODUCTO_NO_EXISTE_TEMPLATE = "PRODUCTO_NO_EXISTE";
+    public static final String ERROR_DESCONOCIDO_TEMPLATE = "ERROR_DESCONOCIDO";
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorGenerico> handleBindErrors(MethodArgumentNotValidException exception){
@@ -32,11 +37,34 @@ public class GlobalExceptionHandler {
         return ResponseEntity.internalServerError().body(errorGenerico);
     }
 
+    @ExceptionHandler(HandlerMethodValidationException.class)
+    public ResponseEntity<ErrorGenerico> handleBindErrors(HandlerMethodValidationException exception){
+
+        var errorList = exception.getAllValidationResults().stream()
+                .map(
+                        argumentError -> {
+                            Map<String, Object > errorMap = new HashMap<>();
+                            argumentError.getResolvableErrors().forEach(
+                                    resolvableError -> {
+                                        errorMap.put(resolvableError.getDefaultMessage(),argumentError.getArgument());
+                                    }
+                            );
+                            return errorMap;
+                        }
+                ).toList();
+
+        ErrorGenerico errorGenerico = new ErrorGenerico("Error en los argumentos enviados a la request",
+                StringUtils.join(errorList, ",")
+        );
+
+        return ResponseEntity.internalServerError().body(errorGenerico);
+    }
+
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<ErrorGenerico> handleResourceNotFoundException(ResourceNotFoundException exception, WebRequest webRequest) {
-        ErrorGenerico errorGenerico = new ErrorGenerico(
-                HttpStatus.NOT_FOUND.getReasonPhrase(),
-                getMensajeErrorTemplate(webRequest,exception.getMessage())
+    public ResponseEntity<ErrorNoEncontrado> handleResourceNotFoundException(ResourceNotFoundException exception, WebRequest webRequest) {
+        ErrorNoEncontrado errorGenerico = new ErrorNoEncontrado(
+                PRODUCTO_NO_EXISTE_TEMPLATE,
+                exception.getMessage()
         );
         return new ResponseEntity<>(errorGenerico, HttpStatus.NOT_FOUND);
     }
@@ -44,7 +72,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorGenerico> handleGlobalException(Exception exception, WebRequest webRequest){
         ErrorGenerico errorGenerico = new ErrorGenerico(
-                HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(),
+                ERROR_DESCONOCIDO_TEMPLATE,
                 getMensajeErrorTemplate(webRequest,exception.getMessage())
         );
         return new ResponseEntity<>(errorGenerico, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -54,8 +82,7 @@ public class GlobalExceptionHandler {
 
         StringBuffer stringBuffer = new StringBuffer();
 
-        return stringBuffer.append("URI : ")
-                .append(webRequest.getDescription(false))
+        return stringBuffer.append(webRequest.getDescription(false))
                 .append(" ")
                 .append("MENSAJE : ")
                 .append(mensaje).toString();
