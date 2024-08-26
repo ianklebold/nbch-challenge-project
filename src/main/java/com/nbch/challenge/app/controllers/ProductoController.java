@@ -4,6 +4,7 @@ import com.nbch.challenge.app.domain.Producto;
 import com.nbch.challenge.app.dtos.ErrorGenerico;
 import com.nbch.challenge.app.dtos.producto.CrearProductoDto;
 import com.nbch.challenge.app.dtos.producto.ProductoDto;
+import com.nbch.challenge.app.exception.ResourceNotFoundException;
 import com.nbch.challenge.app.service.producto.ProductoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -12,13 +13,21 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
+import java.util.Optional;
 
 import static com.nbch.challenge.app.controllers.ProductoController.PRODUCTO_PATH;
 
@@ -31,7 +40,13 @@ import static com.nbch.challenge.app.controllers.ProductoController.PRODUCTO_PAT
 @RequestMapping(path = PRODUCTO_PATH, produces = {MediaType.APPLICATION_JSON_VALUE})
 public class ProductoController {
 
+    public static final String RESOURCE_NAME = "producto";
+
+    public static final String PATH_ID_NAME = "idProducto";
+
     public static final String PRODUCTO_PATH = "/api/v1/productos";
+
+    public static final String PATH_ID = "/{"+PATH_ID_NAME+"}";
 
     private final ProductoService productoService;
 
@@ -92,6 +107,26 @@ public class ProductoController {
     public List<ProductoDto> getProductos(){
 
         return productoService.getProductos();
+
+    }
+
+    @GetMapping(PATH_ID)
+    public ResponseEntity<ProductoDto> getProductoById( @PathVariable( PATH_ID_NAME )
+                                                           @NotNull( message = "El id no debe ser nulo" )
+                                                           @Positive( message = "El id debe ser positivo" ) long idProducto ){
+
+        Optional<ProductoDto> producto = productoService.getProductoById( idProducto );
+
+        if ( producto.isPresent() ){
+
+            var productoDto = producto.get();
+
+            return ResponseEntity
+                    .status( HttpStatus.OK )
+                    .body( productoDto );
+        }
+
+        throw new ResourceNotFoundException( RESOURCE_NAME,PATH_ID_NAME, Long.toString( idProducto ) );
 
     }
 
