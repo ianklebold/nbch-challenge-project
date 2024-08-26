@@ -131,7 +131,7 @@ public class ProductoController {
                     )
             ),
             @ApiResponse(
-                    responseCode = "400",
+                    responseCode = "404",
                     description = "HTTP Status NOT FOUND",
                     content = @Content(
                             schema = @Schema(implementation = ErrorGenerico.class)
