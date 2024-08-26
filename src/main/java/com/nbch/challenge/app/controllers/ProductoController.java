@@ -7,6 +7,7 @@ import com.nbch.challenge.app.dtos.producto.ProductoDto;
 import com.nbch.challenge.app.exception.ResourceNotFoundException;
 import com.nbch.challenge.app.service.producto.ProductoService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -93,12 +94,19 @@ public class ProductoController {
     @ApiResponses({
             @ApiResponse(
                     responseCode = "200",
-                    description = "HTTP Status OK"
+                    description = "HTTP Status OK",
+                    content = {
+                            @Content(
+                                    mediaType = "application/json",
+                                    array = @ArraySchema(schema = @Schema(implementation = ProductoDto.class))
+                            )
+                    }
             ),
             @ApiResponse(
                     responseCode = "500",
                     description = "HTTP Status SERVER ERROR",
                     content = @Content(
+                            mediaType = "application/json",
                             schema = @Schema(implementation = ErrorGenerico.class)
                     )
             )
@@ -110,6 +118,33 @@ public class ProductoController {
 
     }
 
+    @Operation(
+            summary = "API REST para obtener producto por id",
+            description = "API REST que permite obtener producto por id"
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "HTTP Status OK",
+                    content = @Content(
+                            schema = @Schema(implementation = ProductoDto.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "HTTP Status NOT FOUND",
+                    content = @Content(
+                            schema = @Schema(implementation = ErrorGenerico.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "HTTP Status SERVER ERROR",
+                    content = @Content(
+                            schema = @Schema(implementation = ErrorGenerico.class)
+                    )
+            )
+    })
     @GetMapping(PATH_ID)
     public ResponseEntity<ProductoDto> getProductoById( @PathVariable( PATH_ID_NAME )
                                                            @NotNull( message = "El id no debe ser nulo" )
