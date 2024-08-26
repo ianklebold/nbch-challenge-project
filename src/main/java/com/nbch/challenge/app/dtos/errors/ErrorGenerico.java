@@ -1,4 +1,4 @@
-package com.nbch.challenge.app.dtos;
+package com.nbch.challenge.app.dtos.errors;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
