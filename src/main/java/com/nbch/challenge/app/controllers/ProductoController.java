@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -73,6 +74,7 @@ public class ProductoController {
                     )
             )
     })
+    @SecurityRequirement(name = "Bearer Authentication")
     @PostMapping
     public ResponseEntity<?> createProduct(@Valid @RequestBody CrearProductoDto crearProductoDto){
 
@@ -147,6 +149,7 @@ public class ProductoController {
                     )
             )
     })
+    @SecurityRequirement(name = "Bearer Authentication")
     @GetMapping(PATH_ID)
     public ResponseEntity<ProductoDto> getProductoById( @PathVariable( PATH_ID_NAME )
                                                            @NotNull( message = "El id no debe ser nulo" )
@@ -185,6 +188,7 @@ public class ProductoController {
                     )
             )
     })
+    @SecurityRequirement(name = "Bearer Authentication")
     @DeleteMapping(PATH_ID)
     public ResponseEntity<?> deleteProductoById( @PathVariable( PATH_ID_NAME )
                                                             @NotNull( message = "El id no debe ser nulo" )
