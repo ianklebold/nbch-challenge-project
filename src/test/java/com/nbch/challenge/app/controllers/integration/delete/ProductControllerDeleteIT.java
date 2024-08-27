@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.jdbc.JdbcTestUtils;
@@ -61,6 +62,8 @@ public class ProductControllerDeleteIT {
     @Nested
     @DisplayName("DELETE ENDPOINTS")
     class test_method_delete_for_productos{
+
+        @WithMockUser
         @Test
         void test_resource_not_found_exception_when_i_want_to_delete_a_product_with_incorrect_id(){
             assertThrows(ResourceNotFoundException.class, () ->{
@@ -68,6 +71,7 @@ public class ProductControllerDeleteIT {
             });
         }
 
+        @WithMockUser
         @Test
         void test_get_an_error_when_i_want_to_delete_a_product_with_incorrect_id() throws Exception {
             var resultado = getRequestResult(PATH_DELETE_PRODUCT,-1);
@@ -77,6 +81,7 @@ public class ProductControllerDeleteIT {
             assertEquals(ErrorConstants.ERROR_ARGUMENTS_TEMPLATE, errorNoEncontradoDto.codigo());
         }
 
+        @WithMockUser
         @Rollback
         @Test
         void test_when_i_delete_a_product_the_count_of_total_product_is_minor_than_before() throws Exception {

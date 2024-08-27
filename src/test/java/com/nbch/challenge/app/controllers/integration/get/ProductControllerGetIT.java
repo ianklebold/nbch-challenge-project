@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.jdbc.JdbcTestUtils;
@@ -61,6 +62,8 @@ public class ProductControllerGetIT {
     @Nested
     @DisplayName("GET ENDPOINTS")
     class test_method_get_for_productos{
+
+        @WithMockUser
         @Test
         void test_get_all_products_without_elements() throws Exception {
             mockMvc.perform(
@@ -70,6 +73,7 @@ public class ProductControllerGetIT {
                     .andExpect(jsonPath("$.length()",is(0)));
         }
 
+        @WithMockUser
         @Test
         @Rollback
         void test_get_all_products_with_elements() throws Exception {
@@ -86,6 +90,7 @@ public class ProductControllerGetIT {
                     ).andExpect(jsonPath("$.length()",is(2)));
         }
 
+        @WithMockUser
         @Test
         void test_resource_not_found_exception_when_i_want_to_find_a_product_with_incorrect_id(){
             assertThrows(ResourceNotFoundException.class, () ->{
@@ -93,6 +98,7 @@ public class ProductControllerGetIT {
             });
         }
 
+        @WithMockUser
         @Test
         void test_get_an_error_when_i_want_to_find_a_product_with_incorrect_id() throws Exception {
             var resultado = mockMvc.perform(get("/api/v1/productos/{idProducto}", -1)
@@ -106,6 +112,7 @@ public class ProductControllerGetIT {
             assertEquals(ErrorConstants.ERROR_ARGUMENTS_TEMPLATE, errorNoEncontradoDto.codigo());
         }
 
+        @WithMockUser
         @Test
         void test_get_an_correct_error_when_i_want_to_find_a_product_with_incorrect_id() throws Exception {
             var resultado = mockMvc.perform(get("/api/v1/productos/{idProducto}", 123123123)
@@ -120,6 +127,7 @@ public class ProductControllerGetIT {
             assertNotEquals(null, errorNoEncontradoDto.mensaje());
         }
 
+        @WithMockUser
         @Rollback
         @Test
         void test_get_product_when_i_want_to_find_a_product_with_correct_id() throws Exception {

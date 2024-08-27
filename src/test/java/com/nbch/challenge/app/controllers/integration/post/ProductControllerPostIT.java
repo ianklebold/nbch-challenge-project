@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.jdbc.JdbcTestUtils;
@@ -64,6 +65,7 @@ public class ProductControllerPostIT {
     @DisplayName("POST ENDPOINTS")
     class test_method_post_for_productos{
 
+        @WithMockUser
         @Test
         @Rollback
         void test_create_a_correct_product() throws Exception {
@@ -83,6 +85,7 @@ public class ProductControllerPostIT {
 
         }
 
+        @WithMockUser
         @Test
         @Rollback
         void test_get_correct_code_with_an_incorrect_name() throws Exception {
@@ -102,7 +105,7 @@ public class ProductControllerPostIT {
         }
 
 
-
+        @WithMockUser
         @Test
         @Rollback
         void test_get_correct_code_with_an_incorrect_price() throws Exception {
